@@ -19,7 +19,8 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 const corsOptions={
     origin:[
-        'https://job-portal-rho-snowy.vercel.app/',
+        'http://localhost:5173',
+        'https://job-portal-rho-snowy.vercel.app',
         ]
     credentials:true
 }
