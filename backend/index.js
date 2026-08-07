@@ -21,7 +21,7 @@ const corsOptions={
     origin:[
         'http://localhost:5173',
         'https://job-portal-rho-snowy.vercel.app',
-        ]
+        ],
     credentials:true
 }
 app.use(cors(corsOptions));
