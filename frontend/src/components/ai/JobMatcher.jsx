@@ -4,6 +4,7 @@ import { Upload, Sparkles, CheckCircle, XCircle, Zap, Loader2, FileText, Target,
 import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
 import store from '../../redux/store'
+import { extractTextFromFile } from '../../utils/pdfReader.js'
 
 const MatchMeter = ({ score }) => {
     const color = score >= 75 ? '#10b981' : score >= 50 ? '#f59e0b' : '#f43f5e'
@@ -63,12 +64,16 @@ export default function JobMatcher() {
         }, 450)
 
         try {
-            const resumeText = await new Promise((resolve, reject) => {
-                const reader = new FileReader()
-                reader.onload = e => resolve(e.target.result)
-                reader.onerror = reject
-                reader.readAsText(resumeFile)
-            })
+            // const resumeText = await new Promise((resolve, reject) => {
+            //     const reader = new FileReader()
+            //     reader.onload = e => resolve(e.target.result)
+            //     reader.onerror = reject
+            //     reader.readAsText(resumeFile)
+            // })
+            const resumeText = await extractTextFromFile(resumeFile)
+            if (!resumeText || resumeText.trim().length < 50) {
+                throw new Error('Could not extract text from resume. Please use a text-based PDF.')
+            }
 
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
