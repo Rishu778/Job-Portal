@@ -27,9 +27,30 @@ const Profile = () => {
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Navbar />
             <div className="orb orb-1" />
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+
+            {/* Responsive adjustments only - all original styles/markup untouched */}
+            <style>{`
+                @media (max-width: 900px) {
+                    .profile-container { padding: 36px 18px !important; }
+                    .profile-body-grid { grid-template-columns: 1fr !important; }
+                }
+
+                @media (max-width: 560px) {
+                    .profile-container { padding: 28px 14px !important; }
+                    .profile-header-card { padding: 26px !important; }
+                    .profile-header-row { flex-direction: column; align-items: flex-start !important; gap: 20px !important; }
+                    .profile-header-info { flex-wrap: wrap; }
+                    .profile-avatar { width: 68px !important; height: 68px !important; border-radius: 18px !important; }
+                    .profile-name { font-size: 21px !important; }
+                    .profile-edit-btn { width: 100%; justify-content: center !important; }
+                    .profile-sidebar-card { padding: 18px !important; }
+                    .profile-applied-card { padding: 20px !important; }
+                }
+            `}</style>
+
+            <div className="profile-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
                 {/* Profile Header */}
-                <div className="glass-card" style={{ borderRadius: '24px', padding: '40px', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
+                <div className="glass-card profile-header-card" style={{ borderRadius: '24px', padding: '40px', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
                     {/* Decorative gradient */}
                     <div style={{
                         position: 'absolute', top: 0, left: 0, right: 0, height: '120px',
@@ -37,10 +58,10 @@ const Profile = () => {
                         borderRadius: '24px 24px 0 0'
                     }} />
 
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <div className="profile-header-row" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+                        <div className="profile-header-info" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                             {/* Avatar */}
-                            <div style={{
+                            <div className="profile-avatar" style={{
                                 width: '88px', height: '88px', borderRadius: '24px',
                                 background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -55,7 +76,7 @@ const Profile = () => {
                                 }
                             </div>
                             <div>
-                                <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '26px', color: 'var(--text-primary)', marginBottom: '6px' }}>
+                                <h1 className="profile-name" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '26px', color: 'var(--text-primary)', marginBottom: '6px' }}>
                                     {user?.fullname}
                                 </h1>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', maxWidth: '400px', lineHeight: '1.6' }}>
@@ -63,7 +84,7 @@ const Profile = () => {
                                 </p>
                             </div>
                         </div>
-                        <button onClick={() => setOpen(true)} className="btn-secondary" style={{
+                        <button onClick={() => setOpen(true)} className="btn-secondary profile-edit-btn" style={{
                             display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '10px 18px'
                         }}>
                             <Edit2 size={14} /> Edit Profile
@@ -88,11 +109,11 @@ const Profile = () => {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '24px' }}>
+                <div className="profile-body-grid" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '24px' }}>
                     {/* Sidebar */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {/* Contact Info */}
-                        <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
+                        <div className="glass-card profile-sidebar-card" style={{ borderRadius: '20px', padding: '24px' }}>
                             <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '13px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
                                 Contact
                             </h3>
@@ -119,7 +140,7 @@ const Profile = () => {
                         </div>
 
                         {/* Skills */}
-                        <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
+                        <div className="glass-card profile-sidebar-card" style={{ borderRadius: '20px', padding: '24px' }}>
                             <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '13px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
                                 <Star size={13} style={{ marginRight: '6px', verticalAlign: 'middle' }} />Skills
                             </h3>
@@ -134,7 +155,7 @@ const Profile = () => {
                         </div>
 
                         {/* Resume */}
-                        <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
+                        <div className="glass-card profile-sidebar-card" style={{ borderRadius: '20px', padding: '24px' }}>
                             <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '13px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
                                 <FileText size={13} style={{ marginRight: '6px', verticalAlign: 'middle' }} />Resume
                             </h3>
@@ -148,7 +169,7 @@ const Profile = () => {
                     </div>
 
                     {/* Applied Jobs */}
-                    <div className="glass-card" style={{ borderRadius: '20px', padding: '28px' }}>
+                    <div className="glass-card profile-applied-card" style={{ borderRadius: '20px', padding: '28px' }}>
                         <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '18px', color: 'var(--text-primary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <TrendingUp size={18} color="#a855f7" /> Applied Jobs
                         </h2>
