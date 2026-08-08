@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import Navbar from '../shared/Navbar'
 import { Upload, Sparkles, TrendingUp, AlertCircle, CheckCircle, XCircle, Lightbulb, Loader2, FileText, Target, Zap } from 'lucide-react'
 import { toast } from 'sonner'
-import { extractPDFText } from "../../utils/pdfExtractor.js"
+// import { extractPDFText } from "../../utils/pdfExtractor.js"
+import { extractTextFromFile } from '../../utils/pdfReader'
 
 const ScoreRing = ({ score, label, color, size = 110 }) => {
     const radius = (size - 16) / 2
@@ -79,14 +80,17 @@ export default function ResumeAnalyzer() {
             //     reader.onerror = reject
             //     reader.readAsText(file)
             // })
-            let text = "";
-            if (file.type === "application/pdf") {
-                text = await extractPDFText(file);
+            // let text = "";
+            // if (file.type === "application/pdf") {
+            //     text = await extractPDFText(file);
+            // }
+            // else {
+            //     text = await file.text();
+            // }
+            const text = await extractTextFromFile(file)
+            if (!text || text.trim().length < 50) {
+                throw new Error('Could not extract text. Please use a text-based PDF or TXT file.')
             }
-            else {
-                text = await file.text();
-            }
-
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
