@@ -6,6 +6,21 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import store from '../../redux/store'
 
+// Responsive breakpoint hook — tracks viewport width so layout can adapt
+function useViewport() {
+    const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+    useEffect(() => {
+        const onResize = () => setWidth(window.innerWidth)
+        window.addEventListener('resize', onResize)
+        return () => window.removeEventListener('resize', onResize)
+    }, [])
+    return {
+        width,
+        isMobile: width < 640,
+        isTablet: width >= 640 && width < 1024,
+    }
+}
+
 const MatchBadge = ({ score }) => {
     const color = score >= 85 ? '#10b981' : score >= 70 ? '#a855f7' : score >= 55 ? '#f59e0b' : '#f43f5e'
     const label = score >= 85 ? 'Top Pick' : score >= 70 ? 'Great Fit' : score >= 55 ? 'Good Match' : 'Possible'
@@ -98,6 +113,7 @@ export default function JobRecommendations() {
     const [progress, setProgress] = useState(0)
     const [generated, setGenerated] = useState(false)
     const [filter, setFilter] = useState('all')
+    const { isMobile, isTablet } = useViewport()
 
     const buildUserProfile = () => {
         const skills = user?.profile?.skills?.join(', ') || 'Not specified'
@@ -211,12 +227,21 @@ Generate exactly 6 recommendations sorted by match_score descending.`
 
     const hasProfile = user?.profile?.skills?.length > 0 || user?.profile?.bio
 
+    // Responsive size values derived from breakpoint, everything else identical
+    const containerPadding = isMobile ? '32px 16px' : '48px 24px'
+    const headerFontSize = isMobile ? '26px' : '36px'
+    const mainGridColumns = isMobile || isTablet ? '1fr' : '1fr 320px'
+    const emptyStatePadding = isMobile ? '40px 20px' : '80px'
+    const emptyStateFeatureColumns = isMobile ? '1fr' : 'repeat(2, 1fr)'
+    const progressStepsWrap = isMobile ? 'wrap' : 'nowrap'
+    const sidebarSticky = isMobile || isTablet ? 'static' : 'sticky'
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Navbar />
             <div className="orb orb-1" />
             <div className="orb orb-2" />
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: containerPadding, position: 'relative', zIndex: 1 }}>
                 {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px', marginBottom: '36px' }}>
                     <div>
@@ -224,7 +249,7 @@ Generate exactly 6 recommendations sorted by match_score descending.`
                             <Brain size={13} color="#3b82f6" />
                             <span style={{ color: '#3b82f6', fontSize: '12px', fontFamily: 'Syne, sans-serif', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>AI Powered</span>
                         </div>
-                        <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '36px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                        <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: headerFontSize, color: 'var(--text-primary)', marginBottom: '8px' }}>
                             Job <span className="gradient-text">Recommendations</span>
                         </h1>
                         <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '500px' }}>
@@ -234,7 +259,7 @@ Generate exactly 6 recommendations sorted by match_score descending.`
 
                     <button onClick={generateRecommendations} disabled={loading}
                         className="btn-primary"
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 24px', fontSize: '15px', whiteSpace: 'nowrap' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 24px', fontSize: '15px', whiteSpace: 'nowrap', width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
                         {loading
                             ? <><Loader2 size={17} style={{ animation: 'spin 1s linear infinite' }} /> Generating...</>
                             : <><RefreshCw size={17} /> {generated ? 'Refresh' : 'Generate'} Recommendations</>}
@@ -263,18 +288,18 @@ Generate exactly 6 recommendations sorted by match_score descending.`
                 {/* Progress bar */}
                 {loading && (
                     <div style={{ borderRadius: '16px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', padding: '20px', marginBottom: '24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
                             <Brain size={18} color="#3b82f6" />
                             <div>
                                 <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '600', fontSize: '14px', color: 'var(--text-primary)' }}>AI is analyzing your profile...</div>
                                 <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>Matching your skills against {allJobs.length} available positions</div>
                             </div>
-                            <span style={{ marginLeft: 'auto', color: '#3b82f6', fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '15px' }}>{Math.round(progress)}%</span>
+                            <span style={{ marginLeft: isMobile ? '0' : 'auto', color: '#3b82f6', fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '15px' }}>{Math.round(progress)}%</span>
                         </div>
                         <div style={{ height: '8px', background: 'var(--bg-hover)', borderRadius: '100px', overflow: 'hidden' }}>
                             <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #7c3aed, #3b82f6, #06b6d4)', borderRadius: '100px', transition: 'width 0.4s ease' }} />
                         </div>
-                        <div style={{ display: 'flex', gap: '20px', marginTop: '12px' }}>
+                        <div style={{ display: 'flex', flexWrap: progressStepsWrap, gap: isMobile ? '10px' : '20px', marginTop: '12px' }}>
                             {['Reading profile', 'Analyzing skills', 'Scoring jobs', 'Generating insights'].map((step, i) => (
                                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                     <div style={{
@@ -294,11 +319,11 @@ Generate exactly 6 recommendations sorted by match_score descending.`
 
                 {/* Main content after generation */}
                 {generated && !loading && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', alignItems: 'start' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: mainGridColumns, gap: '24px', alignItems: 'start' }}>
                         {/* Jobs Grid */}
                         <div>
                             {/* Filter tabs */}
-                            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
                                 {[
                                     { key: 'all', label: `All (${recommendations.length})` },
                                     { key: 'top', label: '🔥 Top Picks' },
@@ -314,7 +339,7 @@ Generate exactly 6 recommendations sorted by match_score descending.`
                                 ))}
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
                                 {filteredRecs.map((rec, i) => (
                                     <div key={i} style={{ animation: `fadeUp 0.5s ease ${i * 0.08}s forwards`, opacity: 0 }}>
                                         <RecommendedJobCard rec={rec} allJobs={allJobs} navigate={navigate} />
@@ -332,7 +357,7 @@ Generate exactly 6 recommendations sorted by match_score descending.`
 
                         {/* Career Insights sidebar */}
                         {insights && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', position: 'sticky', top: '88px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', position: sidebarSticky, top: '88px' }}>
                                 <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
                                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(59,130,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -389,7 +414,7 @@ Generate exactly 6 recommendations sorted by match_score descending.`
 
                 {/* Initial empty state */}
                 {!generated && !loading && (
-                    <div className="glass-card" style={{ borderRadius: '24px', padding: '80px', textAlign: 'center' }}>
+                    <div className="glass-card" style={{ borderRadius: '24px', padding: emptyStatePadding, textAlign: 'center' }}>
                         <div style={{
                             width: '88px', height: '88px', borderRadius: '24px',
                             background: 'linear-gradient(135deg, rgba(124,58,237,0.2), rgba(59,130,246,0.1))',
@@ -404,7 +429,7 @@ Generate exactly 6 recommendations sorted by match_score descending.`
                         <p style={{ color: 'var(--text-secondary)', fontSize: '15px', maxWidth: '420px', margin: '0 auto 32px', lineHeight: '1.7' }}>
                             Click <strong style={{ color: 'var(--text-primary)' }}>Generate Recommendations</strong> and our AI will analyze your profile and handpick the best opportunities for you.
                         </p>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', maxWidth: '400px', margin: '0 auto' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: emptyStateFeatureColumns, gap: '12px', maxWidth: '400px', margin: '0 auto' }}>
                             {[
                                 { icon: '🧠', title: 'Profile Analysis', desc: 'Reads your skills & bio' },
                                 { icon: '🎯', title: 'Smart Matching', desc: 'Scores every available job' },
