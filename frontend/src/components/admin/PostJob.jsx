@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../shared/Navbar'
 import { useSelector } from 'react-redux'
 import { toast } from 'sonner'
@@ -6,6 +6,21 @@ import axios from 'axios'
 import { JOB_API_END_POINT } from '../../utils/constant'
 import { useNavigate } from 'react-router-dom'
 import { Loader2, Briefcase, FileText, MapPin, DollarSign, Clock, Award, Users, Building, ArrowLeft } from 'lucide-react'
+
+// Responsive breakpoint hook — tracks viewport width so layout can adapt
+function useViewport() {
+    const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+    useEffect(() => {
+        const onResize = () => setWidth(window.innerWidth)
+        window.addEventListener('resize', onResize)
+        return () => window.removeEventListener('resize', onResize)
+    }, [])
+    return {
+        width,
+        isMobile: width < 640,
+        isTablet: width >= 640 && width < 1024,
+    }
+}
 
 const PostJob = () => {
     const [input, setInput] = useState({
@@ -15,6 +30,7 @@ const PostJob = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const { companies } = useSelector(store => store.company)
+    const { isMobile } = useViewport()
 
     const changeEventHandler = (e) => setInput({ ...input, [e.target.name]: e.target.value })
     const selectChangeHandler = (e) => {
@@ -51,11 +67,18 @@ const PostJob = () => {
         { label: 'No. of Positions', name: 'position', type: 'number', icon: <Users size={15} />, placeholder: '1', col: 1 },
     ]
 
+    // Responsive size values derived from breakpoint, everything else identical
+    const containerPadding = isMobile ? '32px 16px' : '48px 24px'
+    const cardPadding = isMobile ? '24px 20px' : '40px'
+    const titleFontSize = isMobile ? '24px' : '32px'
+    const gridColumns = isMobile ? '1fr' : '1fr 1fr'
+    const fullSpan = isMobile ? 'span 1' : 'span 2'
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Navbar />
             <div className="orb orb-1" />
-            <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+            <div style={{ maxWidth: '800px', margin: '0 auto', padding: containerPadding, position: 'relative', zIndex: 1 }}>
                 <button onClick={() => navigate('/admin/jobs')} style={{
                     display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px',
                     color: 'var(--text-secondary)', background: 'transparent', border: 'none',
@@ -65,17 +88,17 @@ const PostJob = () => {
                 </button>
 
                 <div style={{ marginBottom: '32px' }}>
-                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '32px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: titleFontSize, color: 'var(--text-primary)', marginBottom: '8px' }}>
                         Post a <span className="gradient-text">New Job</span>
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Fill in the details to attract the right candidates</p>
                 </div>
 
-                <div className="glass-card" style={{ borderRadius: '24px', padding: '40px' }}>
+                <div className="glass-card" style={{ borderRadius: '24px', padding: cardPadding }}>
                     <form onSubmit={submitHandler}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: gridColumns, gap: '16px', marginBottom: '16px' }}>
                             {fields.map(f => (
-                                <div key={f.name} style={{ gridColumn: f.col === 2 ? 'span 2' : 'span 1' }}>
+                                <div key={f.name} style={{ gridColumn: f.col === 2 ? fullSpan : 'span 1' }}>
                                     <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '500', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{f.label}</label>
                                     <div style={{ position: 'relative' }}>
                                         <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }}>{f.icon}</div>
