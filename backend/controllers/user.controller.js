@@ -160,7 +160,7 @@ export const updateProfile = async (req,res) => {
         // Updating Data
         if(fullname) user.fullname=fullname;
         if(email) user.email=email;
-        if(phoneNumber) user.phoneNumber=phoneNumber;
+        if(phoneNumber) user.phoneNumber=String(phoneNumber);
         if(bio) user.profile.bio=bio;
         if(skillsArray) user.profile.skills=skillsArray;
 
