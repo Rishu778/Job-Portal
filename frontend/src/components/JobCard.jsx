@@ -21,16 +21,33 @@ const JobCard = ({ job }) => {
     const tc = typeColors[job?.jobType] || typeColors['Full Time']
 
     return (
-        <div className="glass-card" style={{
+        <div className="glass-card jobcard-root" style={{
             borderRadius: '20px', padding: '24px', cursor: 'pointer',
             display: 'flex', flexDirection: 'column', gap: '16px',
             position: 'relative', overflow: 'hidden'
         }}>
+            {/* Responsive adjustments only - all original styles/markup untouched */}
+            <style>{`
+                @media (max-width: 480px) {
+                    .jobcard-root { padding: 16px !important; border-radius: 16px !important; }
+                    .jobcard-logo { width: 40px !important; height: 40px !important; }
+                    .jobcard-title { font-size: 15px !important; }
+                    .jobcard-top-row { flex-wrap: wrap; gap: 10px; }
+                    .jobcard-actions { flex-direction: column; }
+                    .jobcard-actions .btn-secondary { width: 100%; }
+                }
+
+                @media (max-width: 360px) {
+                    .jobcard-company-name { font-size: 13px !important; }
+                    .jobcard-tags span { font-size: 11px !important; padding: 4px 10px !important; }
+                }
+            `}</style>
+
             {/* Top row */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div className="jobcard-top-row" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {/* Company logo */}
-                    <div style={{
+                    <div className="jobcard-logo" style={{
                         width: '48px', height: '48px', borderRadius: '12px',
                         background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0
@@ -43,7 +60,7 @@ const JobCard = ({ job }) => {
                         }
                     </div>
                     <div>
-                        <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '600', color: 'var(--text-primary)', fontSize: '15px' }}>{job?.company?.name}</div>
+                        <div className="jobcard-company-name" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '600', color: 'var(--text-primary)', fontSize: '15px' }}>{job?.company?.name}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-secondary)', fontSize: '12px', marginTop: '2px' }}>
                             <MapPin size={11} /> India
                         </div>
@@ -64,7 +81,7 @@ const JobCard = ({ job }) => {
 
             {/* Job title & desc */}
             <div>
-                <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '17px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                <h3 className="jobcard-title" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '17px', color: 'var(--text-primary)', marginBottom: '8px' }}>
                     {job?.title}
                 </h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -73,7 +90,7 @@ const JobCard = ({ job }) => {
             </div>
 
             {/* Tags */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <div className="jobcard-tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <span style={{ padding: '5px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '500', color: tc.color, background: tc.bg, border: `1px solid ${tc.border}` }}>
                     {job?.jobType}
                 </span>
@@ -89,7 +106,7 @@ const JobCard = ({ job }) => {
             <div className="divider" />
 
             {/* Actions */}
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="jobcard-actions" style={{ display: 'flex', gap: '10px' }}>
                 <button onClick={() => navigate(`/description/${job?._id}`)} className="btn-primary"
                     style={{ flex: 1, padding: '10px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                     View Details <ArrowRight size={14} />
