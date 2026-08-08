@@ -13,17 +13,18 @@ const MatchMeter = ({ score }) => {
     const offset = circumference - (score / 100) * circumference
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '32px' }}>
-            <div style={{ position: 'relative', width: '180px', height: '180px' }}>
-                <svg width="180" height="180" style={{ transform: 'rotate(-90deg)' }}>
-                    <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg-hover)" strokeWidth="12" />
-                    <circle cx="90" cy="90" r="70" fill="none" stroke={color} strokeWidth="12"
-                        strokeDasharray={circumference} strokeDashoffset={offset}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px' }}>
+            <div style={{ position: 'relative', width: '160px', height: '160px' }}>
+                <svg width="160" height="160" style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx="80" cy="80" r="62" fill="none" stroke="var(--bg-hover)" strokeWidth="12" />
+                    <circle cx="80" cy="80" r="62" fill="none" stroke={color} strokeWidth="12"
+                        strokeDasharray={2 * Math.PI * 62}
+                        strokeDashoffset={2 * Math.PI * 62 - (score / 100) * 2 * Math.PI * 62}
                         strokeLinecap="round"
                         style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)', filter: `drop-shadow(0 0 10px ${color}70)` }} />
                 </svg>
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '38px', color, lineHeight: 1 }}>{score}%</span>
+                    <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '34px', color, lineHeight: 1 }}>{score}%</span>
                     <span style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '4px' }}>Match</span>
                 </div>
             </div>
@@ -64,12 +65,6 @@ export default function JobMatcher() {
         }, 450)
 
         try {
-            // const resumeText = await new Promise((resolve, reject) => {
-            //     const reader = new FileReader()
-            //     reader.onload = e => resolve(e.target.result)
-            //     reader.onerror = reject
-            //     reader.readAsText(resumeFile)
-            // })
             const resumeText = await extractTextFromFile(resumeFile)
             if (!resumeText || resumeText.trim().length < 50) {
                 throw new Error('Could not extract text from resume. Please use a text-based PDF.')
@@ -139,23 +134,105 @@ ${jobDesc.slice(0, 3000)}`
     const interviewColor = (p) => ({ 'High': '#10b981', 'Medium': '#f59e0b', 'Low': '#f43f5e' }[p] || '#f59e0b')
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', overflowX: 'hidden' }}>
             <Navbar />
             <div className="orb orb-1" />
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+
+            <style>{`
+                .matcher-wrapper {
+                    max-width: 1100px;
+                    margin: 0 auto;
+                    padding: 48px 24px;
+                    position: relative;
+                    z-index: 1;
+                }
+                .matcher-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 24px;
+                }
+                .matcher-grid-result {
+                    display: grid;
+                    grid-template-columns: 380px 1fr;
+                    gap: 24px;
+                }
+                .matcher-score-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-around;
+                    flex-wrap: wrap;
+                    background: var(--bg-secondary);
+                    border-bottom: 1px solid var(--border-subtle);
+                }
+                .matcher-skills-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 14px;
+                }
+                .matcher-gaps-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 14px;
+                }
+                .matcher-title {
+                    font-size: 36px;
+                }
+                @media (max-width: 900px) {
+                    .matcher-grid-result {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+                @media (max-width: 768px) {
+                    .matcher-wrapper {
+                        padding: 32px 16px !important;
+                    }
+                    .matcher-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 16px !important;
+                    }
+                    .matcher-grid-result {
+                        grid-template-columns: 1fr !important;
+                        gap: 16px !important;
+                    }
+                    .matcher-title {
+                        font-size: 26px !important;
+                    }
+                }
+                @media (max-width: 480px) {
+                    .matcher-wrapper {
+                        padding: 24px 12px !important;
+                    }
+                    .matcher-skills-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 10px !important;
+                    }
+                    .matcher-gaps-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 10px !important;
+                    }
+                    .matcher-score-row {
+                        flex-direction: column !important;
+                    }
+                    .matcher-title {
+                        font-size: 22px !important;
+                    }
+                }
+            `}</style>
+
+            <div className="matcher-wrapper">
                 {/* Header */}
                 <div style={{ marginBottom: '36px' }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '100px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', marginBottom: '16px' }}>
                         <Zap size={13} color="#10b981" />
                         <span style={{ color: '#10b981', fontSize: '12px', fontFamily: 'Syne, sans-serif', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>AI Powered</span>
                     </div>
-                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '36px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                    <h1 className="matcher-title" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '8px' }}>
                         Job <span className="gradient-text">Matcher</span>
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Compare your resume against any job description and get an instant compatibility score</p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: result ? '380px 1fr' : '1fr 1fr', gap: '24px' }}>
+                <div className={result ? 'matcher-grid-result' : 'matcher-grid'}>
                     {/* Input Panel */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {/* Resume Upload */}
@@ -189,13 +266,14 @@ ${jobDesc.slice(0, 3000)}`
                             <textarea
                                 value={jobDesc}
                                 onChange={e => setJobDesc(e.target.value)}
-                                placeholder="Paste the full job description here...&#10;&#10;Include requirements, responsibilities, and preferred qualifications for the most accurate match."
+                                placeholder="Paste the full job description here..."
                                 style={{
-                                    width: '100%', minHeight: '180px', background: 'var(--bg-secondary)',
+                                    width: '100%', minHeight: '160px', background: 'var(--bg-secondary)',
                                     border: `1px solid ${jobDesc.length > 50 ? 'rgba(16,185,129,0.4)' : 'var(--border-subtle)'}`,
                                     borderRadius: '12px', padding: '14px', color: 'var(--text-primary)',
                                     fontFamily: 'DM Sans, sans-serif', fontSize: '13px', lineHeight: '1.7',
-                                    resize: 'vertical', outline: 'none', transition: 'border-color 0.2s'
+                                    resize: 'vertical', outline: 'none', transition: 'border-color 0.2s',
+                                    boxSizing: 'border-box'
                                 }}
                             />
                             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '6px' }}>
@@ -237,7 +315,7 @@ ${jobDesc.slice(0, 3000)}`
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {/* Score + Verdict */}
                             <div className="glass-card" style={{ borderRadius: '20px', overflow: 'hidden' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-subtle)' }}>
+                                <div className="matcher-score-row">
                                     <MatchMeter score={result.match_percentage} />
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px' }}>
                                         {[
@@ -254,12 +332,8 @@ ${jobDesc.slice(0, 3000)}`
                                 </div>
 
                                 {/* Verdict */}
-                                <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <div style={{
-                                        width: '10px', height: '10px', borderRadius: '50%',
-                                        background: verdictColor(result.verdict),
-                                        boxShadow: `0 0 8px ${verdictColor(result.verdict)}`
-                                    }} />
+                                <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap' }}>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: verdictColor(result.verdict), boxShadow: `0 0 8px ${verdictColor(result.verdict)}`, marginTop: '4px', flexShrink: 0 }} />
                                     <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '14px', color: verdictColor(result.verdict) }}>
                                         {result.verdict}
                                     </span>
@@ -270,8 +344,7 @@ ${jobDesc.slice(0, 3000)}`
                             </div>
 
                             {/* Skills Grid */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                                {/* Matching Skills */}
+                            <div className="matcher-skills-grid">
                                 <div style={{ borderRadius: '16px', background: 'var(--bg-card)', border: '1px solid rgba(16,185,129,0.2)', padding: '18px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                                         <CheckCircle size={16} color="#10b981" />
@@ -287,7 +360,6 @@ ${jobDesc.slice(0, 3000)}`
                                     </div>
                                 </div>
 
-                                {/* Missing Skills */}
                                 <div style={{ borderRadius: '16px', background: 'var(--bg-card)', border: '1px solid rgba(244,63,94,0.2)', padding: '18px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                                         <XCircle size={16} color="#f43f5e" />
@@ -318,7 +390,7 @@ ${jobDesc.slice(0, 3000)}`
                             )}
 
                             {/* Key Gaps + Strengths */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                            <div className="matcher-gaps-grid">
                                 <div style={{ borderRadius: '16px', background: 'var(--bg-card)', border: '1px solid rgba(245,158,11,0.2)', padding: '18px' }}>
                                     <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)', marginBottom: '12px' }}>⚠️ Key Gaps</div>
                                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -347,7 +419,7 @@ ${jobDesc.slice(0, 3000)}`
 
                     {/* Placeholder when no result */}
                     {!result && (
-                        <div className="glass-card" style={{ borderRadius: '20px', padding: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+                        <div className="glass-card" style={{ borderRadius: '20px', padding: '48px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
                             <div style={{ width: '72px', height: '72px', borderRadius: '20px', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', border: '1px solid rgba(16,185,129,0.2)' }}>
                                 <Target size={32} color="#10b981" />
                             </div>
@@ -357,7 +429,7 @@ ${jobDesc.slice(0, 3000)}`
                             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.7', maxWidth: '280px' }}>
                                 Upload your resume and paste a job description to get an instant compatibility score and personalized gap analysis.
                             </p>
-                            <div style={{ display: 'flex', gap: '12px', marginTop: '28px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', gap: '10px', marginTop: '28px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                 {['Match %', 'Skill Gaps', 'Interview Chances', 'Recommendations'].map((f, i) => (
                                     <span key={i} style={{ padding: '6px 14px', borderRadius: '100px', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)', fontSize: '12px', fontFamily: 'Syne, sans-serif' }}>
                                         {f}
