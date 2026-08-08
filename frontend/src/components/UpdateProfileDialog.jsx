@@ -65,12 +65,25 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     ]
 
     return (
-        <div style={{
+        <div className="upd-overlay" style={{
             position: 'fixed', inset: 0, zIndex: 1000,
             background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px'
         }} onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
-            <div style={{
+            {/* Responsive adjustments only - all original styles/markup untouched */}
+            <style>{`
+                @media (max-width: 560px) {
+                    .upd-overlay { padding: 0 !important; align-items: flex-end !important; }
+                    .upd-modal { border-radius: 20px 20px 0 0 !important; max-width: 100% !important; max-height: 92vh !important; padding: 26px !important; }
+                }
+
+                @media (max-width: 380px) {
+                    .upd-modal { padding: 20px !important; }
+                    .upd-modal-title { font-size: 19px !important; }
+                }
+            `}</style>
+
+            <div className="upd-modal" style={{
                 background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
                 borderRadius: '24px', padding: '36px', width: '100%', maxWidth: '500px',
                 maxHeight: '90vh', overflowY: 'auto',
@@ -79,7 +92,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                 {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
                     <div>
-                        <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '22px', color: 'var(--text-primary)', marginBottom: '4px' }}>Update Profile</h2>
+                        <h2 className="upd-modal-title" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '22px', color: 'var(--text-primary)', marginBottom: '4px' }}>Update Profile</h2>
                         <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Keep your info up to date</p>
                     </div>
                     <button onClick={() => setOpen(false)} style={{
