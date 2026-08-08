@@ -58,36 +58,142 @@ export default function AIHub() {
     const navigate = useNavigate()
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', overflowX: 'hidden' }}>
             <Navbar />
             <div className="orb orb-1" />
             <div className="orb orb-2" />
 
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '60px 24px', position: 'relative', zIndex: 1 }}>
+            <style>{`
+                .aihub-wrapper {
+                    max-width: 1100px;
+                    margin: 0 auto;
+                    padding: 60px 24px;
+                    position: relative;
+                    zIndex: 1;
+                }
+                .aihub-header {
+                    text-align: center;
+                    margin-bottom: 64px;
+                }
+                .aihub-stats {
+                    display: flex;
+                    justify-content: center;
+                    gap: 40px;
+                    margin-top: 40px;
+                    flex-wrap: wrap;
+                }
+                .aihub-cards-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+                    gap: 20px;
+                }
+                .aihub-feature-card {
+                    border-radius: 24px;
+                    padding: 32px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .aihub-card-inner {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 18px;
+                }
+                .aihub-cta {
+                    text-align: center;
+                    margin-top: 64px;
+                    padding: 48px;
+                    border-radius: 24px;
+                    background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(59,130,246,0.05));
+                    border: 1px solid rgba(124,58,237,0.15);
+                }
+                .aihub-cta-buttons {
+                    display: flex;
+                    gap: 12px;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }
+
+                @media (max-width: 768px) {
+                    .aihub-wrapper {
+                        padding: 36px 16px !important;
+                    }
+                    .aihub-header {
+                        margin-bottom: 36px !important;
+                    }
+                    .aihub-stats {
+                        gap: 24px !important;
+                    }
+                    .aihub-cards-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 14px !important;
+                    }
+                    .aihub-feature-card {
+                        padding: 22px !important;
+                        border-radius: 18px !important;
+                    }
+                    .aihub-cta {
+                        margin-top: 36px !important;
+                        padding: 28px 20px !important;
+                        border-radius: 18px !important;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .aihub-wrapper {
+                        padding: 24px 12px !important;
+                    }
+                    .aihub-card-inner {
+                        flex-direction: column !important;
+                        gap: 14px !important;
+                    }
+                    .aihub-icon-box {
+                        width: 48px !important;
+                        height: 48px !important;
+                        border-radius: 14px !important;
+                    }
+                    .aihub-feature-title {
+                        font-size: 17px !important;
+                    }
+                    .aihub-cta-title {
+                        font-size: 20px !important;
+                    }
+                    .aihub-cta-buttons button {
+                        width: 100% !important;
+                        justify-content: center !important;
+                    }
+                    .aihub-stats {
+                        gap: 16px !important;
+                    }
+                }
+            `}</style>
+
+            <div className="aihub-wrapper">
                 {/* Header */}
-                <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+                <div className="aihub-header">
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 20px', borderRadius: '100px', background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '20px' }}>
                         <Sparkles size={14} color="#a855f7" />
                         <span style={{ color: '#a855f7', fontSize: '13px', fontFamily: 'Syne, sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            Powered by Claude AI
+                            Powered by Groq AI
                         </span>
                     </div>
-                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: 'clamp(32px, 5vw, 56px)', color: 'var(--text-primary)', marginBottom: '16px', lineHeight: '1.1', letterSpacing: '-1px' }}>
+                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: 'clamp(28px, 5vw, 56px)', color: 'var(--text-primary)', marginBottom: '16px', lineHeight: '1.1', letterSpacing: '-1px' }}>
                         Your AI Career<br /><span className="gradient-text">Toolkit</span>
                     </h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '17px', maxWidth: '520px', margin: '0 auto', lineHeight: '1.7' }}>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 'clamp(14px, 2vw, 17px)', maxWidth: '520px', margin: '0 auto', lineHeight: '1.7', padding: '0 8px' }}>
                         Four powerful AI tools to supercharge your job search — from parsing your resume to landing interviews.
                     </p>
 
                     {/* Stats row */}
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginTop: '40px', flexWrap: 'wrap' }}>
+                    <div className="aihub-stats">
                         {[
                             { value: '4', label: 'AI Tools' },
                             { value: '< 5s', label: 'Response Time' },
                             { value: '100%', label: 'Free to Use' },
                         ].map((s, i) => (
                             <div key={i} style={{ textAlign: 'center' }}>
-                                <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '28px', background: 'linear-gradient(135deg, #a855f7, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.value}</div>
+                                <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: 'clamp(22px, 4vw, 28px)', background: 'linear-gradient(135deg, #a855f7, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.value}</div>
                                 <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>{s.label}</div>
                             </div>
                         ))}
@@ -95,17 +201,17 @@ export default function AIHub() {
                 </div>
 
                 {/* Feature Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))', gap: '20px' }}>
+                <div className="aihub-cards-grid">
                     {aiFeatures.map((feature, i) => (
                         <div
                             key={i}
+                            className="aihub-feature-card"
                             onClick={() => navigate(feature.path)}
                             style={{
-                                borderRadius: '24px', padding: '32px',
-                                background: 'var(--bg-card)', border: `1px solid ${feature.border}`,
-                                cursor: 'pointer', transition: 'all 0.3s ease',
-                                position: 'relative', overflow: 'hidden',
-                                animation: `fadeUp 0.5s ease ${i * 0.1}s forwards`, opacity: 0
+                                background: 'var(--bg-card)',
+                                border: `1px solid ${feature.border}`,
+                                animation: `fadeUp 0.5s ease ${i * 0.1}s forwards`,
+                                opacity: 0
                             }}
                             onMouseEnter={e => {
                                 e.currentTarget.style.transform = 'translateY(-4px)'
@@ -126,20 +232,22 @@ export default function AIHub() {
                                 pointerEvents: 'none'
                             }} />
 
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '18px' }}>
+                            <div className="aihub-card-inner">
                                 {/* Icon */}
-                                <div style={{
+                                <div className="aihub-icon-box" style={{
                                     width: '60px', height: '60px', borderRadius: '18px', flexShrink: 0,
                                     background: feature.bg, border: `1px solid ${feature.border}`,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    color: feature.color, fontSize: '28px'
+                                    color: feature.color
                                 }}>
                                     {feature.icon}
                                 </div>
 
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                                        <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '20px', color: 'var(--text-primary)' }}>{feature.title}</h2>
+                                        <h2 className="aihub-feature-title" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '20px', color: 'var(--text-primary)' }}>
+                                            {feature.title}
+                                        </h2>
                                         <span style={{ padding: '3px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: '600', color: feature.color, background: feature.bg, border: `1px solid ${feature.border}` }}>
                                             {feature.subtitle}
                                         </span>
@@ -168,14 +276,14 @@ export default function AIHub() {
                 </div>
 
                 {/* Bottom CTA */}
-                <div style={{ textAlign: 'center', marginTop: '64px', padding: '48px', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(124,58,237,0.08), rgba(59,130,246,0.05))', border: '1px solid rgba(124,58,237,0.15)' }}>
-                    <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '28px', color: 'var(--text-primary)', marginBottom: '10px' }}>
+                <div className="aihub-cta">
+                    <h2 className="aihub-cta-title" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '28px', color: 'var(--text-primary)', marginBottom: '10px' }}>
                         Ready to land your dream job?
                     </h2>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: '28px' }}>
                         Start with parsing your resume, then analyze it, match it to jobs, and let AI recommend the best fits.
                     </p>
-                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <div className="aihub-cta-buttons">
                         <button onClick={() => navigate('/ai/resume-parser')} className="btn-primary" style={{ padding: '12px 28px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Sparkles size={16} /> Start with Resume Parser
                         </button>
