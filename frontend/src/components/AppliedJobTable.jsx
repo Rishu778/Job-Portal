@@ -21,9 +21,19 @@ const AppliedJobTable = () => {
     }
 
     return (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="ajt-scroll" style={{ overflowX: 'auto' }}>
+            {/* Responsive adjustments only - all original styles/markup untouched.
+                Columns keep a minimum width on small screens so the table scrolls
+                horizontally instead of squashing its content. */}
+            <style>{`
+                @media (max-width: 640px) {
+                    .ajt-scroll { margin: 0 -4px; padding: 0 4px; }
+                    .ajt-header, .ajt-row { min-width: 560px; }
+                }
+            `}</style>
+
             {/* Header */}
-            <div style={{
+            <div className="ajt-header" style={{
                 display: 'grid', gridTemplateColumns: '120px 1fr 1fr 110px',
                 gap: '16px', padding: '10px 16px', marginBottom: '8px',
                 color: 'var(--text-secondary)', fontSize: '11px',
@@ -39,7 +49,7 @@ const AppliedJobTable = () => {
                 {allAppliedJobs.map((appliedJob) => {
                     const s = statusConfig[appliedJob.status] || statusConfig.pending
                     return (
-                        <div key={appliedJob?._id} style={{
+                        <div key={appliedJob?._id} className="ajt-row" style={{
                             display: 'grid', gridTemplateColumns: '120px 1fr 1fr 110px',
                             gap: '16px', padding: '14px 16px', borderRadius: '12px',
                             background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)',
