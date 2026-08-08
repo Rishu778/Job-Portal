@@ -20,14 +20,23 @@ const Home = () => {
     }, [])
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', overflowX: 'hidden' }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .home-divider {
+                        margin: 0 16px !important;
+                        max-width: 100% !important;
+                    }
+                }
+            `}</style>
+
             <Navbar />
             <HeroSection />
-            <div className="divider" style={{ margin: '0 auto', maxWidth: '1100px' }} />
+            <div className="divider home-divider" style={{ margin: '0 auto', maxWidth: '1100px' }} />
             <Category />
-            <div className="divider" style={{ margin: '0 auto', maxWidth: '1100px' }} />
+            <div className="divider home-divider" style={{ margin: '0 auto', maxWidth: '1100px' }} />
             <AIToolsSection />
-            <div className="divider" style={{ margin: '0 auto', maxWidth: '1100px' }} />
+            <div className="divider home-divider" style={{ margin: '0 auto', maxWidth: '1100px' }} />
             <LatestJobs />
             <Footer />
         </div>
