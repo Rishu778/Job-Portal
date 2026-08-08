@@ -8,6 +8,21 @@ import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
 import useGetCompanyById from '../../hooks/useGetCompanyById'
 
+// Responsive breakpoint hook — tracks viewport width so layout can adapt
+function useViewport() {
+    const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+    useEffect(() => {
+        const onResize = () => setWidth(window.innerWidth)
+        window.addEventListener('resize', onResize)
+        return () => window.removeEventListener('resize', onResize)
+    }, [])
+    return {
+        width,
+        isMobile: width < 640,
+        isTablet: width >= 640 && width < 1024,
+    }
+}
+
 const CompanySetup = () => {
     const params = useParams()
     useGetCompanyById(params.id)
@@ -16,6 +31,7 @@ const CompanySetup = () => {
     const { singleCompany } = useSelector(store => store.company)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const { isMobile } = useViewport()
 
     const changeEventHandler = (e) => setInput({ ...input, [e.target.name]: e.target.value })
     const changeFileHandler = (e) => {
@@ -56,11 +72,18 @@ const CompanySetup = () => {
         { label: 'Location', name: 'location', icon: <MapPin size={15} />, placeholder: 'City, Country' },
     ]
 
+    // Responsive size values derived from breakpoint, everything else identical
+    const containerPadding = isMobile ? '32px 16px' : '48px 24px'
+    const cardPadding = isMobile ? '24px 20px' : '36px'
+    const titleFontSize = isMobile ? '22px' : '28px'
+    const fieldsGridColumns = isMobile ? '1fr' : '1fr 1fr'
+    const fullSpan = isMobile ? 'span 1' : 'span 2'
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Navbar />
             <div className="orb orb-2" />
-            <div style={{ maxWidth: '640px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+            <div style={{ maxWidth: '640px', margin: '0 auto', padding: containerPadding, position: 'relative', zIndex: 1 }}>
                 <button onClick={() => navigate('/admin/companies')} style={{
                     display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px',
                     color: 'var(--text-secondary)', background: 'transparent', border: 'none',
@@ -70,17 +93,17 @@ const CompanySetup = () => {
                 </button>
 
                 <div style={{ marginBottom: '28px' }}>
-                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '28px', color: 'var(--text-primary)', marginBottom: '6px' }}>
+                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: titleFontSize, color: 'var(--text-primary)', marginBottom: '6px' }}>
                         Company <span className="gradient-text">Setup</span>
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Update your company profile information</p>
                 </div>
 
-                <div className="glass-card" style={{ borderRadius: '24px', padding: '36px' }}>
+                <div className="glass-card" style={{ borderRadius: '24px', padding: cardPadding }}>
                     <form onSubmit={submitHandler}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: fieldsGridColumns, gap: '16px', marginBottom: '16px' }}>
                             {fields.map(f => (
-                                <div key={f.name} style={{ gridColumn: f.name === 'description' ? 'span 2' : 'span 1' }}>
+                                <div key={f.name} style={{ gridColumn: f.name === 'description' ? fullSpan : 'span 1' }}>
                                     <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '500', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{f.label}</label>
                                     <div style={{ position: 'relative' }}>
                                         <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }}>{f.icon}</div>
@@ -91,7 +114,7 @@ const CompanySetup = () => {
                             ))}
 
                             {/* Logo upload */}
-                            <div style={{ gridColumn: 'span 2' }}>
+                            <div style={{ gridColumn: fullSpan }}>
                                 <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '500', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Company Logo</label>
                                 <label htmlFor="logoUpload" style={{
                                     display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 16px',
@@ -99,7 +122,7 @@ const CompanySetup = () => {
                                     background: 'rgba(124,58,237,0.05)'
                                 }}>
                                     <Upload size={16} color="#a855f7" />
-                                    <span style={{ color: logoName ? '#a855f7' : 'var(--text-secondary)', fontSize: '13px' }}>
+                                    <span style={{ color: logoName ? '#a855f7' : 'var(--text-secondary)', fontSize: '13px', wordBreak: 'break-word' }}>
                                         {logoName || 'Upload logo image...'}
                                     </span>
                                 </label>
