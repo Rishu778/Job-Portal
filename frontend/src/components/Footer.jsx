@@ -4,8 +4,42 @@ import { Briefcase, Github, Twitter, Linkedin, Mail, ArrowRight } from 'lucide-r
 export default function Footer() {
     return (
         <footer style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-subtle)', marginTop: '80px', position: 'relative', zIndex: 1 }}>
+            <style>{`
+                .footer-grid {
+                    display: grid;
+                    grid-template-columns: 2fr 1fr 1fr 1fr;
+                    gap: 48px;
+                    margin-bottom: 48px;
+                }
+                .footer-bottom {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+                @media (max-width: 900px) {
+                    .footer-grid {
+                        grid-template-columns: 1fr 1fr !important;
+                        gap: 32px !important;
+                    }
+                }
+                @media (max-width: 560px) {
+                    .footer-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 28px !important;
+                    }
+                    .footer-bottom {
+                        flex-direction: column !important;
+                        align-items: flex-start !important;
+                        gap: 16px !important;
+                    }
+                    .footer-newsletter {
+                        max-width: 100% !important;
+                    }
+                }
+            `}</style>
+
             <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '60px 24px 0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '48px', marginBottom: '48px' }}>
+                <div className="footer-grid">
                     {/* Brand */}
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
@@ -24,13 +58,14 @@ export default function Footer() {
                             Connecting ambitious professionals with their dream careers. Your future starts here.
                         </p>
                         {/* Newsletter */}
-                        <div style={{ display: 'flex', gap: '8px' }}>
+                        <div className="footer-newsletter" style={{ display: 'flex', gap: '8px', maxWidth: '320px' }}>
                             <input placeholder="Your email..." style={{
                                 flex: 1, background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
                                 borderRadius: '10px', padding: '10px 14px', color: 'var(--text-primary)',
-                                fontSize: '13px', outline: 'none', fontFamily: 'DM Sans, sans-serif'
+                                fontSize: '13px', outline: 'none', fontFamily: 'DM Sans, sans-serif',
+                                minWidth: 0
                             }} />
-                            <button className="btn-primary" style={{ padding: '10px 14px', borderRadius: '10px' }}>
+                            <button className="btn-primary" style={{ padding: '10px 14px', borderRadius: '10px', flexShrink: 0 }}>
                                 <ArrowRight size={16} />
                             </button>
                         </div>
@@ -74,7 +109,7 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom */}
-                <div style={{ borderTop: '1px solid var(--border-subtle)', padding: '20px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="footer-bottom" style={{ borderTop: '1px solid var(--border-subtle)', padding: '20px 0' }}>
                     <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
                         © {new Date().getFullYear()} CareerMate. All rights reserved.
                     </span>
