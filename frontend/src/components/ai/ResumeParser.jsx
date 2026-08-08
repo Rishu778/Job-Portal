@@ -5,10 +5,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../../redux/authSlice'
 import axios from 'axios'
 import { USER_API_END_POINT } from '../../utils/constant.js'
-// import { extractPDFText } from "../../utils/pdfExtractor.js"
 import { toast } from 'sonner'
 import store from '../../redux/store'
-import { extractTextFromFile } from '../../utils/pdfReader'
+import { extractTextFromFile } from '../../utils/pdfReader.js'
 
 const sectionConfig = [
     { key: 'name',       label: 'Full Name',   icon: <User size={15} />,          color: '#a855f7' },
@@ -26,11 +25,8 @@ function safeParseJSON(raw) {
             .replace(/```json/gi, '')
             .replace(/```/gi, '')
             .trim()
-
         const match = cleaned.match(/\{[\s\S]*\}/)
-
         if (!match) return null
-
         return JSON.parse(match[0])
     } catch (error) {
         console.error("safeParseJSON failed:", error)
@@ -68,19 +64,6 @@ export default function ResumeParser() {
             setProgress(p => p < 85 ? p + Math.random() * 12 : p)
         }, 400)
         try {
-            // const text = await new Promise((resolve, reject) => {
-            //     const reader = new FileReader()
-            //     reader.onload = (e) => resolve(e.target.result)
-            //     reader.onerror = reject
-            //     reader.readAsText(file)
-            // })
-            // let text = "";
-            // if (file.type === "application/pdf") {
-            //     text = await extractPDFText(file);
-            // }
-            // else {
-            //     text = await file.text();
-            // }
             const text = await extractTextFromFile(file)
             if (!text || text.trim().length < 50) {
                 throw new Error('Could not extract text. Please use a text-based PDF or TXT file.')
@@ -102,43 +85,19 @@ export default function ResumeParser() {
   "email": "",
   "phone": "",
   "skills": [],
-  "experience": [
-    {
-      "company": "",
-      "role": "",
-      "duration": "",
-      "description": ""
-    }
-  ],
-  "education": [
-    {
-      "institution": "",
-      "degree": "",
-      "year": ""
-    }
-  ],
-  "projects": [
-    {
-      "name": "",
-      "description": "",
-      "tech": ""
-    }
-  ]
+  "experience": [{"company": "","role": "","duration": "","description": ""}],
+  "education": [{"institution": "","degree": "","year": ""}],
+  "projects": [{"name": "","description": "","tech": ""}]
 }
 
 Resume Text:
-${text.slice(0,8000)}
-`
+${text.slice(0, 8000)}`
                     }]
                 })
             })
             const data = await response.json()
-            if (!response.ok) {
-                throw new Error(
-                    data.error?.message || "Groq API Error"
-                )
-            }
-            const rawText =data?.choices?.[0]?.message?.content || ""
+            if (!response.ok) throw new Error(data.error?.message || "Groq API Error")
+            const rawText = data?.choices?.[0]?.message?.content || ""
             clearInterval(progressInterval)
             setProgress(100)
             const result = safeParseJSON(rawText)
@@ -231,34 +190,112 @@ ${text.slice(0,8000)}
     }
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', overflowX: 'hidden' }}>
             <Navbar />
             <div className="orb orb-1" />
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+
+            <style>{`
+                .parser-wrapper {
+                    max-width: 900px;
+                    margin: 0 auto;
+                    padding: 48px 24px;
+                    position: relative;
+                    z-index: 1;
+                }
+                .parser-title {
+                    font-size: 36px;
+                }
+                .parser-main-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 24px;
+                }
+                .parser-main-grid-single {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 24px;
+                }
+                .parser-info-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                }
+                .parser-dropzone {
+                    padding: 48px 32px;
+                }
+                @media (max-width: 768px) {
+                    .parser-wrapper {
+                        padding: 32px 16px !important;
+                    }
+                    .parser-title {
+                        font-size: 26px !important;
+                    }
+                    .parser-main-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 16px !important;
+                    }
+                    .parser-dropzone {
+                        padding: 32px 20px !important;
+                    }
+                }
+                @media (max-width: 480px) {
+                    .parser-wrapper {
+                        padding: 24px 12px !important;
+                    }
+                    .parser-title {
+                        font-size: 22px !important;
+                    }
+                    .parser-info-grid {
+                        grid-template-columns: 1fr 1fr !important;
+                        gap: 8px !important;
+                    }
+                    .parser-dropzone {
+                        padding: 24px 16px !important;
+                    }
+                }
+            `}</style>
+
+            <div className="parser-wrapper">
+                {/* Header */}
                 <div style={{ marginBottom: '36px' }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '100px', background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.25)', marginBottom: '16px' }}>
                         <Sparkles size={13} color="#a855f7" />
                         <span style={{ color: '#a855f7', fontSize: '12px', fontFamily: 'Syne, sans-serif', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>AI Powered</span>
                     </div>
-                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '36px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                    <h1 className="parser-title" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '8px' }}>
                         Resume <span className="gradient-text">Parser</span>
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Upload your resume and let AI extract all key information automatically</p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: parsed ? '1fr 1fr' : '1fr', gap: '24px' }}>
+                <div className={parsed ? 'parser-main-grid' : 'parser-main-grid-single'}>
+                    {/* Left Panel */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div onDrop={handleDrop} onDragOver={e => e.preventDefault()}
+                        {/* Drop Zone */}
+                        <div
+                            className="parser-dropzone"
+                            onDrop={handleDrop}
+                            onDragOver={e => e.preventDefault()}
                             onClick={() => document.getElementById('resumeFileInput').click()}
-                            style={{ borderRadius: '20px', border: `2px dashed ${file ? 'rgba(124,58,237,0.6)' : 'var(--border-subtle)'}`, background: file ? 'rgba(124,58,237,0.05)' : 'var(--bg-card)', padding: '48px 32px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.3s' }}>
+                            style={{
+                                borderRadius: '20px',
+                                border: `2px dashed ${file ? 'rgba(124,58,237,0.6)' : 'var(--border-subtle)'}`,
+                                background: file ? 'rgba(124,58,237,0.05)' : 'var(--bg-card)',
+                                textAlign: 'center', cursor: 'pointer', transition: 'all 0.3s'
+                            }}>
                             <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: file ? 'rgba(124,58,237,0.15)' : 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', border: '1px solid var(--border-subtle)' }}>
                                 {file ? <FileText size={28} color="#a855f7" /> : <Upload size={28} color="var(--text-secondary)" />}
                             </div>
-                            <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '16px', color: 'var(--text-primary)', marginBottom: '6px' }}>{file ? fileName : 'Drop your resume here'}</h3>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>{file ? 'Click to change file' : 'PDF or text file — click to browse'}</p>
+                            <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '16px', color: 'var(--text-primary)', marginBottom: '6px' }}>
+                                {file ? fileName : 'Drop your resume here'}
+                            </h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+                                {file ? 'Click to change file' : 'PDF or text file — click to browse'}
+                            </p>
                             <input id="resumeFileInput" type="file" accept=".pdf,.txt,.doc" onChange={handleFile} style={{ display: 'none' }} />
                         </div>
 
+                        {/* Progress Bar */}
                         {loading && (
                             <div style={{ borderRadius: '12px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', padding: '16px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -271,19 +308,35 @@ ${text.slice(0,8000)}
                             </div>
                         )}
 
+                        {/* Parse Button */}
                         <button onClick={parseResume} disabled={!file || loading} className="btn-primary"
-                            style={{ padding: '14px', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: !file ? 0.5 : 1 }}>
+                            style={{ padding: '14px', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: !file ? 0.5 : 1, width: '100%', boxSizing: 'border-box' }}>
                             {loading ? <><Loader2 size={17} style={{ animation: 'spin 1s linear infinite' }} /> Parsing...</> : <><Sparkles size={17} /> Parse Resume</>}
                         </button>
 
+                        {/* Auto Fill Button */}
                         {parsed && (
-                            <button onClick={autoFillProfile} disabled={autoFilled} style={{ padding: '14px', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderRadius: '12px', border: `1px solid ${autoFilled ? 'rgba(16,185,129,0.4)' : 'rgba(16,185,129,0.3)'}`, background: autoFilled ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.08)', color: '#10b981', cursor: autoFilled ? 'default' : 'pointer', fontFamily: 'Syne, sans-serif', fontWeight: '600', transition: 'all 0.2s' }}>
+                            <button onClick={autoFillProfile} disabled={autoFilled}
+                                style={{
+                                    padding: '14px', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                    borderRadius: '12px', border: `1px solid ${autoFilled ? 'rgba(16,185,129,0.4)' : 'rgba(16,185,129,0.3)'}`,
+                                    background: autoFilled ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.08)',
+                                    color: '#10b981', cursor: autoFilled ? 'default' : 'pointer',
+                                    fontFamily: 'Syne, sans-serif', fontWeight: '600', transition: 'all 0.2s',
+                                    width: '100%', boxSizing: 'border-box'
+                                }}>
                                 {autoFilled ? <><CheckCircle size={17} /> Profile Updated!</> : <><ArrowRight size={17} /> Auto-Fill My Profile</>}
                             </button>
                         )}
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            {[{ icon: '🔒', title: 'Private', desc: 'Your data stays secure' }, { icon: '⚡', title: 'Instant', desc: 'Results in seconds' }, { icon: '🎯', title: 'Accurate', desc: 'AI-powered extraction' }, { icon: '🔄', title: 'Auto-Fill', desc: 'Populate your profile' }].map((c, i) => (
+                        {/* Info Cards */}
+                        <div className="parser-info-grid">
+                            {[
+                                { icon: '🔒', title: 'Private', desc: 'Your data stays secure' },
+                                { icon: '⚡', title: 'Instant', desc: 'Results in seconds' },
+                                { icon: '🎯', title: 'Accurate', desc: 'AI-powered extraction' },
+                                { icon: '🔄', title: 'Auto-Fill', desc: 'Populate your profile' }
+                            ].map((c, i) => (
                                 <div key={i} style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                                     <div style={{ fontSize: '20px', marginBottom: '6px' }}>{c.icon}</div>
                                     <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '600', fontSize: '13px', color: 'var(--text-primary)' }}>{c.title}</div>
@@ -293,6 +346,7 @@ ${text.slice(0,8000)}
                         </div>
                     </div>
 
+                    {/* Right Panel — Results */}
                     {parsed && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '80vh', overflowY: 'auto', paddingRight: '4px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -322,4 +376,3 @@ ${text.slice(0,8000)}
         </div>
     )
 }
-
