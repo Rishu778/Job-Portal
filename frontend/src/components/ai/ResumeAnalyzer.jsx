@@ -1,9 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from '../shared/Navbar'
 import { Upload, Sparkles, TrendingUp, AlertCircle, CheckCircle, XCircle, Lightbulb, Loader2, FileText, Target, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 // import { extractPDFText } from "../../utils/pdfExtractor.js"
 import { extractTextFromFile } from '../../utils/pdfReader.js'
+
+// Responsive breakpoint hook — tracks viewport width so layout can adapt
+function useViewport() {
+    const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+    useEffect(() => {
+        const onResize = () => setWidth(window.innerWidth)
+        window.addEventListener('resize', onResize)
+        return () => window.removeEventListener('resize', onResize)
+    }, [])
+    return {
+        width,
+        isMobile: width < 640,
+        isTablet: width >= 640 && width < 1024,
+    }
+}
 
 const ScoreRing = ({ score, label, color, size = 110 }) => {
     const radius = (size - 16) / 2
@@ -52,6 +67,7 @@ export default function ResumeAnalyzer() {
     const [loading, setLoading] = useState(false)
     const [analysis, setAnalysis] = useState(null)
     const [progress, setProgress] = useState(0)
+    const { isMobile, isTablet } = useViewport()
 
     const handleFile = (e) => {
         const f = e.target.files?.[0]
@@ -143,25 +159,32 @@ ${text.slice(0, 8000)}`
 
     const ratingColor = (r) => ({ 'Excellent': '#10b981', 'Good': '#a855f7', 'Average': '#f59e0b', 'Needs Work': '#f43f5e' }[r] || '#a855f7')
 
+    // Responsive size values derived from breakpoint, everything else identical
+    const scoreRingSize = isMobile ? 92 : 120
+    const containerPadding = isMobile ? '32px 16px' : '48px 24px'
+    const headerFontSize = isMobile ? '26px' : '36px'
+    const mainGridColumns = analysis ? (isMobile || isTablet ? '1fr' : '320px 1fr') : '1fr'
+    const listGridColumns = isMobile ? '1fr' : '1fr 1fr'
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Navbar />
             <div className="orb orb-2" />
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: containerPadding, position: 'relative', zIndex: 1 }}>
                 {/* Header */}
                 <div style={{ marginBottom: '36px' }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '100px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', marginBottom: '16px' }}>
                         <Target size={13} color="#f59e0b" />
                         <span style={{ color: '#f59e0b', fontSize: '12px', fontFamily: 'Syne, sans-serif', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>AI Powered</span>
                     </div>
-                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '36px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                    <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: headerFontSize, color: 'var(--text-primary)', marginBottom: '8px' }}>
                         Resume <span className="gradient-text">Analyzer</span>
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Get your ATS score, strengths, weaknesses, and AI-powered improvement suggestions</p>
                 </div>
 
                 {/* Upload + Action */}
-                <div style={{ display: 'grid', gridTemplateColumns: analysis ? '320px 1fr' : '1fr', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: mainGridColumns, gap: '24px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                         <div
                             onDrop={handleDrop} onDragOver={e => e.preventDefault()}
@@ -169,12 +192,12 @@ ${text.slice(0, 8000)}`
                             style={{
                                 borderRadius: '20px', border: `2px dashed ${file ? 'rgba(245,158,11,0.5)' : 'var(--border-subtle)'}`,
                                 background: file ? 'rgba(245,158,11,0.04)' : 'var(--bg-card)',
-                                padding: '40px 28px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.3s'
+                                padding: isMobile ? '28px 20px' : '40px 28px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.3s'
                             }}>
                             <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: file ? 'rgba(245,158,11,0.15)' : 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', border: '1px solid var(--border-subtle)' }}>
                                 {file ? <FileText size={24} color="#f59e0b" /> : <Upload size={24} color="var(--text-secondary)" />}
                             </div>
-                            <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '15px', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                            <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '15px', color: 'var(--text-primary)', marginBottom: '4px', wordBreak: 'break-word' }}>
                                 {file ? fileName : 'Upload Resume'}
                             </h3>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{file ? 'Click to change' : 'PDF or text file'}</p>
@@ -219,12 +242,12 @@ ${text.slice(0, 8000)}`
                     {analysis && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {/* Score rings */}
-                            <div className="glass-card" style={{ borderRadius: '20px', padding: '28px' }}>
+                            <div className="glass-card" style={{ borderRadius: '20px', padding: isMobile ? '20px' : '28px' }}>
                                 <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '16px', color: 'var(--text-primary)', marginBottom: '20px' }}>Scores</h3>
                                 <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '24px' }}>
-                                    <ScoreRing score={analysis.ats_score} label="ATS Score" color="#a855f7" size={120} />
-                                    <ScoreRing score={analysis.resume_score} label="Resume Score" color="#f59e0b" size={120} />
-                                    <ScoreRing score={analysis.format_score} label="Format Score" color="#10b981" size={120} />
+                                    <ScoreRing score={analysis.ats_score} label="ATS Score" color="#a855f7" size={scoreRingSize} />
+                                    <ScoreRing score={analysis.resume_score} label="Resume Score" color="#f59e0b" size={scoreRingSize} />
+                                    <ScoreRing score={analysis.format_score} label="Format Score" color="#10b981" size={scoreRingSize} />
                                 </div>
                                 {analysis.summary && (
                                     <div style={{ marginTop: '20px', padding: '14px 16px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
@@ -233,7 +256,7 @@ ${text.slice(0, 8000)}`
                                 )}
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: listGridColumns, gap: '14px' }}>
                                 <ListSection icon={<CheckCircle size={16} />} title="Strengths" items={analysis.strengths}
                                     color="#10b981" bgColor="rgba(16,185,129,0.12)" borderColor="rgba(16,185,129,0.2)" />
                                 <ListSection icon={<XCircle size={16} />} title="Weaknesses" items={analysis.weaknesses}
