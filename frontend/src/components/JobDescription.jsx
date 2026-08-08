@@ -59,14 +59,35 @@ const JobDescription = () => {
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Navbar />
             <div className="orb orb-1" />
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+
+            {/* Responsive adjustments only - all original styles/markup untouched */}
+            <style>{`
+                @media (max-width: 900px) {
+                    .jd-container { padding: 36px 18px !important; }
+                    .jd-grid { grid-template-columns: 1fr !important; }
+                    .jd-sidebar { position: static !important; top: auto !important; }
+                }
+
+                @media (max-width: 560px) {
+                    .jd-container { padding: 28px 14px !important; }
+                    .jd-header-card { padding: 22px !important; }
+                    .jd-header-top { flex-wrap: wrap; }
+                    .jd-company-logo { width: 52px !important; height: 52px !important; }
+                    .jd-title { font-size: 19px !important; }
+                    .jd-req-card { padding: 20px !important; }
+                    .jd-apply-card { padding: 20px !important; }
+                    .jd-details-card { padding: 18px !important; }
+                }
+            `}</style>
+
+            <div className="jd-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px', position: 'relative', zIndex: 1 }}>
+                <div className="jd-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
                     {/* Main Content */}
                     <div>
                         {/* Header Card */}
-                        <div className="glass-card" style={{ borderRadius: '20px', padding: '32px', marginBottom: '24px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-                                <div style={{
+                        <div className="glass-card jd-header-card" style={{ borderRadius: '20px', padding: '32px', marginBottom: '24px' }}>
+                            <div className="jd-header-top" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                                <div className="jd-company-logo" style={{
                                     width: '64px', height: '64px', borderRadius: '16px',
                                     background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
@@ -77,7 +98,7 @@ const JobDescription = () => {
                                     }
                                 </div>
                                 <div>
-                                    <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '22px', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                                    <h2 className="jd-title" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '22px', color: 'var(--text-primary)', marginBottom: '4px' }}>
                                         {singleJob?.title}
                                     </h2>
                                     <div style={{ color: 'var(--text-secondary)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -102,7 +123,7 @@ const JobDescription = () => {
 
                         {/* Requirements */}
                         {singleJob?.requirements && (
-                            <div className="glass-card" style={{ borderRadius: '20px', padding: '28px' }}>
+                            <div className="glass-card jd-req-card" style={{ borderRadius: '20px', padding: '28px' }}>
                                 <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '16px', color: 'var(--text-primary)', marginBottom: '16px' }}>Requirements</h3>
                                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                     {(Array.isArray(singleJob.requirements) ? singleJob.requirements : [singleJob.requirements]).map((req, i) => (
@@ -116,9 +137,9 @@ const JobDescription = () => {
                     </div>
 
                     {/* Sidebar */}
-                    <div style={{ position: 'sticky', top: '88px' }}>
+                    <div className="jd-sidebar" style={{ position: 'sticky', top: '88px' }}>
                         {/* Apply card */}
-                        <div className="glass-card" style={{ borderRadius: '20px', padding: '28px', marginBottom: '16px' }}>
+                        <div className="glass-card jd-apply-card" style={{ borderRadius: '20px', padding: '28px', marginBottom: '16px' }}>
                             <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '18px', color: 'var(--text-primary)', marginBottom: '8px' }}>
                                 {isApplied ? '✅ Applied' : 'Ready to Apply?'}
                             </h3>
@@ -136,7 +157,7 @@ const JobDescription = () => {
                         </div>
 
                         {/* Job details */}
-                        <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
+                        <div className="glass-card jd-details-card" style={{ borderRadius: '20px', padding: '24px' }}>
                             <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Job Details</h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                 {infoItems.map((item, i) => item.value && (
