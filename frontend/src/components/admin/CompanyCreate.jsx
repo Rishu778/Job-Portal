@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../shared/Navbar'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -8,11 +8,27 @@ import { useDispatch } from 'react-redux'
 import { setSingleCompany } from '../../redux/companySlice'
 import { Building, ArrowLeft, ArrowRight } from 'lucide-react'
 
+// Responsive breakpoint hook — tracks viewport width so layout can adapt
+function useViewport() {
+    const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+    useEffect(() => {
+        const onResize = () => setWidth(window.innerWidth)
+        window.addEventListener('resize', onResize)
+        return () => window.removeEventListener('resize', onResize)
+    }, [])
+    return {
+        width,
+        isMobile: width < 640,
+        isTablet: width >= 640 && width < 1024,
+    }
+}
+
 const CompanyCreate = () => {
     const navigate = useNavigate()
     const [companyName, setCompanyName] = useState('')
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
+    const { isMobile } = useViewport()
 
     const registerNewCompany = async () => {
         if (!companyName.trim()) return toast.error('Please enter a company name')
@@ -31,11 +47,16 @@ const CompanyCreate = () => {
         } finally { setLoading(false) }
     }
 
+    // Responsive size values derived from breakpoint, everything else identical
+    const wrapperPadding = isMobile ? '32px 16px' : '40px 24px'
+    const cardPadding = isMobile ? '32px 24px' : '48px 40px'
+    const titleFontSize = isMobile ? '22px' : '26px'
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Navbar />
             <div className="orb orb-1" />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 64px)', padding: '40px 24px', position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 64px)', padding: wrapperPadding, position: 'relative', zIndex: 1 }}>
                 <div style={{ width: '100%', maxWidth: '500px' }}>
                     <button onClick={() => navigate('/admin/companies')} style={{
                         display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px',
@@ -45,7 +66,7 @@ const CompanyCreate = () => {
                         <ArrowLeft size={16} /> Back to Companies
                     </button>
 
-                    <div className="glass-card" style={{ borderRadius: '24px', padding: '48px 40px' }}>
+                    <div className="glass-card" style={{ borderRadius: '24px', padding: cardPadding }}>
                         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                             <div style={{
                                 width: '56px', height: '56px', borderRadius: '16px',
@@ -55,7 +76,7 @@ const CompanyCreate = () => {
                             }}>
                                 <Building size={24} color="white" />
                             </div>
-                            <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '26px', color: 'var(--text-primary)', marginBottom: '8px' }}>Register a Company</h1>
+                            <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: titleFontSize, color: 'var(--text-primary)', marginBottom: '8px' }}>Register a Company</h1>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
                                 What would you like to name your company? You can always change it later.
                             </p>
@@ -69,7 +90,7 @@ const CompanyCreate = () => {
                                 className="dark-input" />
                         </div>
 
-                        <div style={{ display: 'flex', gap: '12px' }}>
+                        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px' }}>
                             <button onClick={() => navigate('/admin/companies')} className="btn-secondary" style={{ flex: 1, padding: '12px' }}>Cancel</button>
                             <button onClick={registerNewCompany} disabled={loading} className="btn-primary"
                                 style={{ flex: 1, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
