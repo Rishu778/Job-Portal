@@ -5,9 +5,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../../redux/authSlice'
 import axios from 'axios'
 import { USER_API_END_POINT } from '../../utils/constant.js'
-import { extractPDFText } from "../../utils/pdfExtractor.js"
+// import { extractPDFText } from "../../utils/pdfExtractor.js"
 import { toast } from 'sonner'
 import store from '../../redux/store'
+import { extractTextFromFile } from '../../utils/pdfReader'
 
 const sectionConfig = [
     { key: 'name',       label: 'Full Name',   icon: <User size={15} />,          color: '#a855f7' },
@@ -73,12 +74,16 @@ export default function ResumeParser() {
             //     reader.onerror = reject
             //     reader.readAsText(file)
             // })
-            let text = "";
-            if (file.type === "application/pdf") {
-                text = await extractPDFText(file);
-            }
-            else {
-                text = await file.text();
+            // let text = "";
+            // if (file.type === "application/pdf") {
+            //     text = await extractPDFText(file);
+            // }
+            // else {
+            //     text = await file.text();
+            // }
+            const text = await extractTextFromFile(file)
+            if (!text || text.trim().length < 50) {
+                throw new Error('Could not extract text. Please use a text-based PDF or TXT file.')
             }
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
