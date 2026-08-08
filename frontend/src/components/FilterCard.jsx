@@ -34,10 +34,21 @@ const FilterCard = () => {
     }, [selectedValue])
 
     return (
-        <div style={{
+        <div className="filtercard-root" style={{
             background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
             borderRadius: '20px', padding: '24px', width: '260px', flexShrink: 0
         }}>
+            {/* Responsive adjustments only - all original styles/markup untouched */}
+            <style>{`
+                @media (max-width: 900px) {
+                    .filtercard-root { width: 100% !important; }
+                }
+
+                @media (max-width: 560px) {
+                    .filtercard-root { padding: 18px !important; border-radius: 16px !important; }
+                }
+            `}</style>
+
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                 <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '16px', color: 'var(--text-primary)' }}>
                     Filters
