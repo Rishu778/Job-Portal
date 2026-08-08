@@ -25,19 +25,33 @@ const Category = () => {
     }
 
     return (
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '60px 24px' }}>
+        <div className="category-root" style={{ maxWidth: '1100px', margin: '0 auto', padding: '60px 24px' }}>
+            {/* Responsive adjustments only - all original styles/markup untouched */}
+            <style>{`
+                @media (max-width: 640px) {
+                    .category-root { padding: 44px 18px !important; }
+                    .category-heading { font-size: 27px !important; }
+                    .category-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important; gap: 10px !important; }
+                    .category-btn { padding: 14px 16px !important; }
+                }
+
+                @media (max-width: 400px) {
+                    .category-grid { grid-template-columns: 1fr 1fr !important; }
+                }
+            `}</style>
+
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                 <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: '100px', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)', color: '#a855f7', fontSize: '12px', fontFamily: 'Syne, sans-serif', fontWeight: '600', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                     Explore by Category
                 </span>
-                <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '36px', color: 'var(--text-primary)' }}>
+                <h2 className="category-heading" style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '36px', color: 'var(--text-primary)' }}>
                     What are you <span className="gradient-text">looking for?</span>
                 </h2>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px' }}>
+            <div className="category-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px' }}>
                 {categories.map((cat, i) => (
-                    <button key={i} onClick={() => searchJobHandler(cat.label)} style={{
+                    <button key={i} className="category-btn" onClick={() => searchJobHandler(cat.label)} style={{
                         display: 'flex', alignItems: 'center', gap: '14px',
                         padding: '18px 20px', borderRadius: '16px', cursor: 'pointer',
                         border: '1px solid var(--border-subtle)',
