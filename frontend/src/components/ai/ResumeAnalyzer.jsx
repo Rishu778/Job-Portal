@@ -3,7 +3,7 @@ import Navbar from '../shared/Navbar'
 import { Upload, Sparkles, TrendingUp, AlertCircle, CheckCircle, XCircle, Lightbulb, Loader2, FileText, Target, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 // import { extractPDFText } from "../../utils/pdfExtractor.js"
-import { extractTextFromFile } from '../../utils/pdfReader'
+import { extractTextFromFile } from '../../utils/pdfReader.js'
 
 const ScoreRing = ({ score, label, color, size = 110 }) => {
     const radius = (size - 16) / 2
