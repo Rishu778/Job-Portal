@@ -78,7 +78,7 @@ export default function JobMatcher() {
                 },
                 body: JSON.stringify({
                     model: 'openai/gpt-oss-120b',
-                    max_tokens: 1000,
+                    max_tokens: 2000,
                     messages: [{
                         role: 'user',
                         content: `You are an expert recruiter and ATS system. Compare this resume against the job description and respond ONLY with a valid JSON object (no markdown, no extra text):
