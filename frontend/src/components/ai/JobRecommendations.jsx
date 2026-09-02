@@ -150,7 +150,7 @@ export default function JobRecommendations() {
                 },
                 body: JSON.stringify({
                     model: 'openai/gpt-oss-120b',
-                    max_tokens: 1000,
+                    max_tokens: 2000,
                     messages: [{
                         role: 'user',
                         content: `You are an intelligent career advisor and job recommendation engine. Based on this candidate's profile and available jobs, generate personalized recommendations.
