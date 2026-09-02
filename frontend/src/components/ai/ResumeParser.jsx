@@ -76,7 +76,7 @@ export default function ResumeParser() {
                 },
                 body: JSON.stringify({
                     model: 'openai/gpt-oss-120b',
-                    max_tokens: 1000,
+                    max_tokens: 2000,
                     messages: [{
                         role: 'user',
                         content: `You are a professional resume parser. Extract structured information from this resume text. IMPORTANT: Respond with RAW JSON only — absolutely no markdown, no code fences, no backticks, no explanation. Start your response directly with {
