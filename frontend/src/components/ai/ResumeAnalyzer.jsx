@@ -115,7 +115,7 @@ export default function ResumeAnalyzer() {
                 },
                 body: JSON.stringify({
                     model: 'openai/gpt-oss-120b',
-                    max_tokens: 1000,
+                    max_tokens: 2000,
                     messages: [{
                         role: 'user',
                         content: `You are an expert ATS (Applicant Tracking System) and resume analyst. Analyze this resume and respond ONLY with a JSON object (no markdown):
